@@ -1,5 +1,14 @@
 node_modules
-.DS_Store
 dist
 dist-ssr
 *.local
+\.vscode
+.DS_*
+*.log
+logs
+**/*.backup.*
+**/*.back.*
+bower_components
+*.sublime*
+psd
+thumb
