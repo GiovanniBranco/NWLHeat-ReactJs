@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
+import io from "socket.io-client";
 import styles from "./styles.module.scss";
 import logoImg from "../../assets/logo.svg";
 
@@ -12,8 +13,29 @@ type Message = {
   };
 };
 
+const messagesQueue: Message[] = [];
+
+const socket = io("http://localhost:4000");
+
+socket.on("new_message", (newMessage) => {
+  console.log(newMessage);
+  messagesQueue.push(newMessage);
+});
+
 export function MessageList() {
   const [messageList, setMessageList] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (messagesQueue.length > 0) {
+        setMessageList((prevMessage) =>
+          [messagesQueue[0], prevMessage[0], prevMessage[1]].filter(Boolean)
+        );
+
+        messagesQueue.shift();
+      }
+    }, 3000);
+  }, []);
 
   useEffect(() => {
     api.get<Message[]>("/messages/last").then((response) => {
